@@ -1,5 +1,8 @@
-# Setup
+# pam_pushover
+A simple helper script to send [Pushover](https://pushover.net) notifications on login via [pam_exec(8)](https://man.freebsd.org/pam_exec).
 
+## Setup
+* Install curl: `pkg install curl`
 * Install script: `install -v -S -m 755 -o root -g wheel notify_pushover.sh /sbin`
 * Create config directory: `mkdir -v -p -m 750 /etc/pushover`
 * Configure Pushover "client".
@@ -8,3 +11,7 @@
 	* Configure priority: `echo $PRIORITY > /etc/pushover/priority` (use `0` unless you need a higher priority).
 * Configure PAM:
 	* Add line to PAM configuration (e.g. `/etc/pam.d/sshd`): `session         optional        pam_exec.so             /sbin/notify_pushover.sh`
+
+## Limitations
+* There is retry logic. Notification will be lost if the Pushover API is unresponsive.
+* The curl command runs as the current user.
