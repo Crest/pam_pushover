@@ -43,7 +43,7 @@ load_config() {
 import_env() {
 	readonly SERVICE="${PAM_SERVICE:-"!!! Unknown service !!!"}"
 	readonly   LUSER="${PAM_USER:-"!!! Unknown local user !!!"}"
-	readonly   RUSER="${PAM_RUSER:-"!!! Unknown remote user !!!"}"
+	readonly   RUSER="${PAM_RUSER:-}"
 	readonly   RHOST="${PAM_RHOST:-"!!! Unknown remote host !!!"}"
 }
 
@@ -52,7 +52,7 @@ import_env() {
 capture_state() {
 	LHOST="$(hostname)"         && readonly LHOST
 	 DATE="$(date -u +'%F %T')" && readonly DATE
-	readonly TITLE="${SERVICE:?}: ${LUSER:?}@${LHOST:?} from $RUSER@$RHOST"
+	readonly TITLE="${SERVICE:?}: ${LUSER:?}@${LHOST:?} from ${RUSER:-}${RUSER:+@}${RHOST:?}"
 	readonly TEXT="${DATE:?}"
 }
 
