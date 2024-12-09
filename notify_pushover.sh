@@ -7,9 +7,8 @@ read API_USER  < /etc/pushover/user
 read PRIORITY  < /etc/pushover/priority
 
 # Import pam_exec environment variables.
-   TYPE="${PAM_TYPE:-Unknown Type}"
 SERVICE="${PAM_SERVICE:-Unknown Service}"
-    TTY="${PAM_TTY:-Unknown TTY}"
+  RUSER="${PAM_RUSER:-Unknown remote user}"
   RHOST="${PAM_RHOST:-Unknown Host}"
    USER="${PAM_USER:-Unknown User}"
 
@@ -17,10 +16,10 @@ SERVICE="${PAM_SERVICE:-Unknown Service}"
 DATE="$(date -u +'%F %T')"
 HOST="$(hostname)"
 
-TITLE="${SERVICE:?}: ${USER:?}@${HOST:?} on $TTY from $RHOST"
-TEXT="${DATE:?}: $TYPE"
+TITLE="${SERVICE:?}: ${USER:?}@${HOST:?} from $USER@$RHOST"
+TEXT="${DATE:?}"
 
-[ "${TYPE:?}" = 'close_session' ] || curl -s \
+curl -s \
 	-F "token=${API_TOKEN:?}" \
 	-F "user=${API_USER:?}" \
 	-F "title=${TITLE:?}" \
