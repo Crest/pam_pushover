@@ -91,7 +91,6 @@ main() {
 	load_config   &&
 	import_env    &&
 	capture_state &&
-	silence       &&
 	notify
 }
 
