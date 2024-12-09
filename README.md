@@ -1,5 +1,7 @@
 # pam_pushover
-A simple helper script to send [Pushover](https://pushover.net) notifications on login via [pam_exec(8)](https://man.freebsd.org/pam_exec).
+A little FreeBSD specific helper script to send [Pushover](https://pushover.net) notifications on login via [pam_exec(8)](https://man.freebsd.org/pam_exec).
+
+Inspired by this [blog post](https://medium.com/privacyguides/enabling-pushover-notifications-on-successful-ssh-logins-a0f984cfbd9d).
 
 ## Setup
 * Install curl: `pkg install curl`
