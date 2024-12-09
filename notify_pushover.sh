@@ -10,7 +10,7 @@ load_config() {
 	readonly API_USER_FILE="${CONFIG_DIR:?}/user"
 	readonly PRIORITY_FILE="${CONFIG_DIR:?}/priority"
 
-	if read API_TOKEN < "${API_TOKEN_FILE:?}"; then
+	if read -r API_TOKEN < "${API_TOKEN_FILE:?}"; then
 		readonly API_TOKEN
 	else
 		STATUS=$?
@@ -18,7 +18,7 @@ load_config() {
 		exit $STATUS
 	fi
 
-	if read API_USER  < "${API_USER_FILE:?}"; then
+	if read -r API_USER  < "${API_USER_FILE:?}"; then
 		readonly API_USER
 	else
 		STATUS=$?
@@ -26,8 +26,8 @@ load_config() {
 		exit $STATUS
 	fi
 
-	if [ -s "${PRIORITY_FILE:?}" ] then
-		if read PRIORITY < "${PRIORITY_FILE:?}"; then
+	if [ -s "${PRIORITY_FILE:?}" ]; then
+		if read -r PRIORITY < "${PRIORITY_FILE:?}"; then
 			readonly PRIORITY
 		else
 			STATUS=$?
@@ -50,22 +50,25 @@ import_env() {
 # Record hostname and time,
 # set title and message text.
 capture_state() {
-	readonly DATE="$(date -u +'%F %T')"
-	readonly LHOST="$(hostname)"
-	TITLE="${SERVICE:?}: ${LUSER:?}@${LHOST:?} from $RUSER@$RHOST"
-	TEXT="${DATE:?}"
+	LHOST="$(hostname)"         && readonly LHOST
+	 DATE="$(date -u +'%F %T')" && readonly DATE
+	readonly TITLE="${SERVICE:?}: ${LUSER:?}@${LHOST:?} from $RUSER@$RHOST"
+	readonly TEXT="${DATE:?}"
 }
 
-# Run daemonized curl.
+# Run daemonized curl with retries.
 notify() {
 	readonly API_URL='https://api.pushover.net/1/messages.json'
 	readonly RETRIES='10000'         # Try up to 10,000 times.
 	readonly MAX_TIME='10'           # Limit each attempt to 10 seconds.
 	readonly RETRY_DELAY='0'         # Use exponentional backoff up to 10 minutes.
 	readonly RETRY_MAX_TIME='604800' # Give up after one week.
+	readonly CURL_USER='pushover'    # Run cron as dedicated user.
+
 	daemon  --change-dir                                   \
 		--close-fds                                    \
-		--title "$TITLE"                               \
+		--title "${TITLE:?}"                           \
+		--user "${CURL_USER:?}"                        \
 		--                                             \
 		curl    --silent                               \
 			--retry-connrefused                    \
@@ -83,6 +86,7 @@ notify() {
 			"${API_URL:?}"
 }
 
+# Pretend shell is saner language than it really is.
 main() {
 	load_config   &&
 	import_env    &&
